@@ -1,0 +1,96 @@
+
+<!doctype html><html lang="es"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#08101d">
+<link rel="manifest" href="/static/manifest.webmanifest"><link rel="icon" href="/static/icons/icon-192.png"><title>FitIA Home V5</title>
+<style>
+:root{--bg:#08101d;--panel:#111827;--line:#263248;--txt:#f8fafc;--muted:#94a3b8;--a:#22c55e;--warn:#f59e0b}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(#08101d,#0b1220);color:var(--txt);font-family:Inter,system-ui,sans-serif;padding-bottom:94px}
+header{position:sticky;top:0;z-index:20;background:#08101df0;backdrop-filter:blur(12px);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #152033}header h1{margin:0;font-size:22px}
+.wrap{max-width:980px;margin:auto;padding:14px 16px}.card{background:#111827;border:1px solid var(--line);border-radius:22px;padding:18px;margin-bottom:14px}.muted{color:var(--muted)}.hidden{display:none!important}
+input,select,textarea{width:100%;background:#0f172a;border:1px solid #334155;color:white;border-radius:12px;padding:12px;margin-top:5px;font-size:16px}label{display:block;font-size:13px;color:#cbd5e1;margin:9px 0}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.btn{border:0;border-radius:13px;padding:12px 14px;font-weight:800}.primary{background:var(--a);color:#05220e}.secondary{background:#1e293b;color:white;border:1px solid #334155}.warn{background:var(--warn);color:#271700}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#080d15f5;border-top:1px solid #1f2937;display:grid;grid-template-columns:repeat(7,1fr);z-index:30}.nav button{background:none;color:#cbd5e1;border:0;padding:10px 2px;font-size:10px}.nav b{display:block;font-size:18px}
+.view{display:none}.view.active{display:block}.hero{background:radial-gradient(circle at 90% 0,#22c55e35,transparent 35%),#111827}.hero h2{font-size:29px;margin:8px 0}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}.row:last-child{border:0}.pill{font-size:12px;background:#1e293b;border:1px solid #334155;border-radius:999px;padding:5px 9px}
+.progress{height:10px;background:#1e293b;border-radius:999px;overflow:hidden}.progress>div{height:100%;background:var(--a);width:0}.setrow{display:grid;grid-template-columns:54px 1fr 1fr 1fr;gap:8px;align-items:end;margin:8px 0}
+.timerbox{text-align:center;background:#0f172a;border-radius:18px;padding:18px;margin:14px 0}.timer{font-size:48px;font-weight:900}
+.demo{height:220px;background:#0f172a;border-radius:18px;display:flex;justify-content:center;align-items:center;overflow:hidden;margin:12px 0}.figure{position:relative;width:100px;height:170px;animation:move 2s ease-in-out infinite}.head{position:absolute;left:32px;top:0;width:36px;height:36px;border:5px solid #e2e8f0;border-radius:50%}.torso{position:absolute;left:47px;top:35px;width:8px;height:70px;background:#e2e8f0;border-radius:6px}.arm,.leg{position:absolute;width:7px;background:#86efac;border-radius:6px;transform-origin:top}.arm{height:65px;top:45px}.leg{height:70px;top:100px;background:#e2e8f0}.a1{left:40px;transform:rotate(35deg)}.a2{left:57px;transform:rotate(-35deg)}.l1{left:43px;transform:rotate(12deg)}.l2{left:55px;transform:rotate(-12deg)}@keyframes move{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(24px) rotate(-5deg)}}
+canvas{width:100%;height:auto;background:#0f172a;border-radius:14px}.chartBtns{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}.chartBtns button{padding:7px 9px;border-radius:10px;background:#1e293b;color:white;border:1px solid #334155}
+.chat{height:330px;overflow:auto;background:#0f172a;border-radius:14px;padding:10px}.msg{padding:9px 11px;border-radius:12px;margin:7px 0;max-width:82%}.me{background:#14532d;margin-left:auto}.ai{background:#1e293b}
+.photo{display:grid;grid-template-columns:120px 1fr;gap:12px}.photo img{width:120px;height:150px;object-fit:cover;border-radius:12px}
+@media(max-width:650px){.grid{grid-template-columns:1fr}.setrow{grid-template-columns:44px 1fr 1fr 1fr}.wrap{padding:12px}.photo{grid-template-columns:90px 1fr}.photo img{width:90px;height:120px}.nav button{font-size:9px}}
+</style></head><body>
+<header><div><h1>FitIA Home</h1><div class="muted">V5</div></div><div><button id="installBtn" class="btn primary hidden">Instalar</button> <button id="logoutBtn" class="btn secondary hidden" onclick="logout()">Salir</button></div></header>
+<div class="wrap">
+<section id="auth" class="view active">
+<div class="card"><h2>Ingresar</h2><label>Email<input id="loginEmail"></label><label>Contraseña<input id="loginPass" type="password"></label><button class="btn primary" onclick="login()">Entrar</button></div>
+<div class="card"><h2>Crear cuenta</h2><label>Nombre<input id="regName"></label><label>Email<input id="regEmail"></label><label>Contraseña<input id="regPass" type="password"></label><button class="btn primary" onclick="register()">Registrarme</button></div>
+</section>
+
+<section id="home" class="view">
+<div class="card hero"><div class="muted">ENTRENAMIENTO DE HOY</div><h2 id="todayTitle"></h2><p id="todayMeta"></p><button class="btn primary" onclick="startWorkout(0)">▶ Comenzar</button></div>
+<div class="card"><h3>Ciclo de 4 semanas</h3><div id="cycleBox"></div></div>
+<div class="card"><h3>Progresión automática</h3><div id="progression"></div></div>
+</section>
+
+<section id="routine" class="view"><div class="card"><h2>Rutina semanal</h2><div id="routineList"></div></div></section>
+
+<section id="workout" class="view">
+<div class="card">
+<div class="muted" id="workoutLabel"></div><h2 id="exerciseName"></h2><div class="progress"><div id="progressBar"></div></div>
+<div class="demo"><div class="figure"><div class="head"></div><div class="torso"></div><div class="arm a1"></div><div class="arm a2"></div><div class="leg l1"></div><div class="leg l2"></div></div></div>
+<p class="muted">Demo animada corta. Puede reemplazarse por video real/IA de 10 s.</p>
+<p id="exerciseMeta"></p><div id="lastHistory" class="card"></div><div id="setsForm"></div>
+<div class="timerbox hidden" id="timerBox"><div class="muted">Descanso</div><div class="timer" id="timer">00:60</div><button class="btn secondary" onclick="skipRest()">Saltar descanso</button></div>
+<button class="btn primary" id="nextBtn" onclick="saveExercise()">Completar ejercicio</button>
+</div>
+</section>
+
+<section id="body" class="view">
+<div class="card"><h2>Perfil</h2><div class="grid"><label>Edad<input id="age" type="number"></label><label>Altura<input id="height" type="number"></label></div><label>Objetivo<input id="goal"></label><label>Equipamiento<textarea id="equipment"></textarea></label><button class="btn primary" onclick="saveProfile()">Guardar perfil</button></div>
+<div class="card"><h2>Medición</h2><div class="grid"><label>Peso<input id="weight" type="number" step=".1"></label><label>Cintura<input id="waist" type="number" step=".1"></label><label>Abdomen<input id="abdomen" type="number" step=".1"></label><label>Pecho<input id="chest" type="number" step=".1"></label><label>Bíceps<input id="biceps" type="number" step=".1"></label><label>Pierna<input id="leg" type="number" step=".1"></label></div><button class="btn primary" onclick="saveMeasurement()">Guardar medición</button></div>
+</section>
+
+<section id="photos" class="view"><div class="card"><h2>Fotos</h2><select id="viewType"><option>Frente</option><option>Perfil</option><option>Espalda</option></select><input id="photoFile" type="file" accept="image/*" capture="environment"><button class="btn primary" onclick="uploadPhoto()">Subir</button></div><div id="photoList"></div></section>
+
+<section id="evolution" class="view"><div class="card"><h2>Evolución</h2><div class="chartBtns"><button onclick="drawMetric('weight')">Peso</button><button onclick="drawMetric('waist')">Cintura</button><button onclick="drawMetric('abdomen')">Abdomen</button><button onclick="drawMetric('chest')">Pecho</button><button onclick="drawMetric('biceps')">Bíceps</button><button onclick="drawMetric('leg')">Pierna</button></div><canvas id="chart" width="760" height="330"></canvas></div><div class="card"><div id="measureList"></div></div></section>
+
+<section id="coach" class="view"><div class="card"><h2>Entrenador IA</h2><div class="chat" id="chat"></div><div class="row"><input id="coachQ" placeholder="Ej.: quiero trabajar más pecho"><button class="btn primary" onclick="askCoach()">Enviar</button></div></div></section>
+</div>
+
+<nav id="nav" class="nav hidden">
+<button onclick="show('home')"><b>🏠</b>Inicio</button><button onclick="show('routine')"><b>🏋️</b>Rutina</button><button onclick="show('workout')"><b>▶</b>Entrenar</button><button onclick="show('body')"><b>📏</b>Cuerpo</button><button onclick="show('photos')"><b>📷</b>Fotos</button><button onclick="show('evolution')"><b>📈</b>Evol.</button><button onclick="show('coach')"><b>🤖</b>IA</button>
+</nav>
+
+<script>
+let routines=[],me=null,measurements=[],current=null,exIndex=0,workoutSets=[],restTimer=null,deferredPrompt=null,currentMetric="weight";
+const $=id=>document.getElementById(id);
+async function api(url,opt={}){let r=await fetch(url,{...opt,headers:{...(opt.body instanceof FormData?{}:{"Content-Type":"application/json"}),...(opt.headers||{})}});let d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||"Error");return d}
+function show(id){document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));$(id).classList.add("active");if(id==="photos")loadPhotos();if(id==="evolution")drawMetric(currentMetric)}
+async function boot(){routines=await api("/api/routines");try{me=await api("/api/me");$("auth").classList.remove("active");$("nav").classList.remove("hidden");$("logoutBtn").classList.remove("hidden");fillProfile();await refresh();show("home")}catch(e){}}
+async function register(){try{await api("/api/register",{method:"POST",body:JSON.stringify({name:$("regName").value,email:$("regEmail").value,password:$("regPass").value})});location.reload()}catch(e){alert(e.message)}}
+async function login(){try{await api("/api/login",{method:"POST",body:JSON.stringify({email:$("loginEmail").value,password:$("loginPass").value})});location.reload()}catch(e){alert(e.message)}}
+async function logout(){await api("/api/logout",{method:"POST"});location.reload()}
+function fillProfile(){let p=me.profile;$("age").value=p.age||"";$("height").value=p.height||"";$("goal").value=p.goal||"";$("equipment").value=p.equipment||""}
+async function saveProfile(){await api("/api/profile",{method:"POST",body:JSON.stringify({age:+$("age").value,height:+$("height").value,goal:$("goal").value,days_per_week:3,minutes_per_session:40,limitations:"",equipment:$("equipment").value})});alert("Perfil guardado")}
+async function refresh(){measurements=await api("/api/measurements");let prog=await api("/api/progression");let cyc=await api("/api/cycle");$("cycleBox").innerHTML=`<div class=row><div><b>Semana ${cyc.week}: ${cyc.name}</b><div class=muted>${cyc.description}</div></div><span class=pill>ciclo 4 semanas</span></div>`;$("todayTitle").textContent=routines[0].title;$("todayMeta").textContent=`${routines[0].mins} min · ${routines[0].ex.length} ejercicios`;renderRoutine();renderMeasurements();$("progression").innerHTML=prog.length?prog.map(x=>`<div class=row><div><b>${x.exercise}</b><div class=muted>Esfuerzo ${x.avg_effort}/5</div></div><div>${x.advice}${x.suggested_weight?`<br><span class=pill>Próx. peso: ${x.suggested_weight} kg</span>`:""}</div></div>`).join(""):"Completá entrenamientos para generar recomendaciones."}
+function renderRoutine(){$("routineList").innerHTML=routines.map((r,i)=>`<div class=row><div><h3>Día ${i+1} · ${r.title}</h3><div class=muted>${r.mins} min</div>${r.ex.map(e=>`<div>${e.name} · ${e.sets}×${e.reps}</div>`).join("")}</div><button class="btn primary" onclick="startWorkout(${i})">Entrenar</button></div>`).join("")}
+async function startWorkout(i){current={...routines[i],routine_index:i};exIndex=0;workoutSets=[];show("workout");await renderExercise()}
+async function renderExercise(){if(!current){$("exerciseName").textContent="Elegí una rutina";$("setsForm").innerHTML="";return}let e=current.ex[exIndex];$("workoutLabel").textContent=`${current.title} · Ejercicio ${exIndex+1}/${current.ex.length}`;$("exerciseName").textContent=e.name;$("exerciseMeta").textContent=`${e.group} · ${e.sets} series · ${e.reps} · descanso ${e.rest}s`;$("progressBar").style.width=`${(exIndex/current.ex.length)*100}%`;let hist=await api("/api/last-sets/"+encodeURIComponent(e.name));$("lastHistory").innerHTML=hist.length?"Últimos registros: "+hist.slice(0,4).map(x=>`${x.reps} rep · ${x.weight??0} kg · esfuerzo ${x.effort}/5`).join(" | "):"Sin registros previos.";$("setsForm").innerHTML=Array.from({length:e.sets},(_,i)=>`<div class=setrow><b>S${i+1}</b><label>Rep<input id="reps_${i}" value="${e.reps.match(/\d+/)?.[0]||""}"></label><label>Kg<input id="kg_${i}" type="number" step=".5" value="${e.weight||0}"></label><label>Esf.<select id="eff_${i}"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></label></div>`).join("");$("timerBox").classList.add("hidden");$("nextBtn").classList.remove("hidden")}
+function saveExercise(){let e=current.ex[exIndex];for(let i=0;i<e.sets;i++)workoutSets.push({exercise_name:e.name,set_no:i+1,reps:$("reps_"+i).value,weight:+$("kg_"+i).value||0,effort:+$("eff_"+i).value});if(exIndex===current.ex.length-1){finishWorkout();return}startRest(e.rest)}
+function startRest(sec){let left=sec;$("timerBox").classList.remove("hidden");$("nextBtn").classList.add("hidden");const tick=()=>{$("timer").textContent=`00:${String(left).padStart(2,"0")}`;if(left<=0){clearInterval(restTimer);exIndex++;renderExercise()}left--};tick();restTimer=setInterval(tick,1000)}
+function skipRest(){clearInterval(restTimer);exIndex++;renderExercise()}
+async function finishWorkout(){await api("/api/workouts",{method:"POST",body:JSON.stringify({routine_index:current.routine_index,title:current.title,duration_minutes:current.mins,sets:workoutSets})});$("progressBar").style.width="100%";$("exerciseName").textContent="🎉 Entrenamiento completado";$("exerciseMeta").textContent="Guardamos tus series y ya podés revisar la progresión.";$("lastHistory").innerHTML="";$("setsForm").innerHTML=`<button class="btn primary" onclick="show('home');refresh()">Ver recomendaciones</button>`;$("nextBtn").classList.add("hidden");current=null;await refresh()}
+async function saveMeasurement(){let o={};["weight","waist","abdomen","chest","biceps","leg"].forEach(k=>o[k]=+$(k).value||null);await api("/api/measurements",{method:"POST",body:JSON.stringify(o)});await refresh();alert("Medición guardada")}
+function renderMeasurements(){let x=measurements.slice().reverse();$("measureList").innerHTML=x.length?x.map(m=>`<div class=row><div>${new Date(m.date).toLocaleDateString()}</div><div>Peso ${m.weight??"—"} · Cintura ${m.waist??"—"} · Abd. ${m.abdomen??"—"} · Pecho ${m.chest??"—"} · Bíceps ${m.biceps??"—"}</div></div>`).join(""):"Sin mediciones"}
+function drawMetric(metric){currentMetric=metric;let c=$("chart"),ctx=c.getContext("2d");ctx.clearRect(0,0,c.width,c.height);ctx.fillStyle="#0f172a";ctx.fillRect(0,0,c.width,c.height);let d=measurements.filter(x=>x[metric]);ctx.fillStyle="#94a3b8";ctx.font="16px sans-serif";if(d.length<2){ctx.fillText("Guardá al menos 2 mediciones.",25,45);return}let v=d.map(x=>x[metric]),mn=Math.min(...v)-1,mx=Math.max(...v)+1;ctx.beginPath();ctx.strokeStyle="#22c55e";ctx.lineWidth=4;d.forEach((x,i)=>{let X=40+i*(c.width-80)/(d.length-1),Y=260-(x[metric]-mn)*(200/(mx-mn));i?ctx.lineTo(X,Y):ctx.moveTo(X,Y)});ctx.stroke();ctx.fillStyle="#cbd5e1";ctx.fillText(`${metric}: ${v[0]} → ${v.at(-1)}`,25,305)}
+async function uploadPhoto(){let f=$("photoFile").files[0];if(!f)return alert("Elegí una foto");let fd=new FormData();fd.append("photo",f);fd.append("view_type",$("viewType").value);await api("/api/photos",{method:"POST",body:fd});await loadPhotos()}
+async function loadPhotos(){let a=await api("/api/photos");$("photoList").innerHTML=a.map(p=>`<div class="card photo"><img src="${p.url}"><div><b>${p.view_type}</b><p>${p.ai_analysis||"Sin analizar"}</p><button class="btn primary" onclick="analyze(${p.id})">Analizar IA</button> <button class="btn secondary" onclick="delPhoto(${p.id})">Eliminar</button></div></div>`).join("")}
+async function analyze(id){await api(`/api/photos/${id}/analyze`,{method:"POST"});await loadPhotos()}
+async function delPhoto(id){if(confirm("¿Eliminar?")){await api(`/api/photos/${id}`,{method:"DELETE"});await loadPhotos()}}
+async function askCoach(){let q=$("coachQ").value.trim();if(!q)return;addMsg(q,"me");$("coachQ").value="";let d=await api("/api/coach",{method:"POST",body:JSON.stringify({message:q})});addMsg(d.answer,"ai")}
+function addMsg(t,c){$("chat").innerHTML+=`<div class="msg ${c}">${t}</div>`;$("chat").scrollTop=$("chat").scrollHeight}
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;$("installBtn").classList.remove("hidden")});$("installBtn").onclick=async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$("installBtn").classList.add("hidden")};
+if("serviceWorker" in navigator)navigator.serviceWorker.register("/static/sw.js");
+boot();addMsg("Hola. Puedo ajustar tu rutina usando tus mediciones, esfuerzo y semana del ciclo.","ai");
+</script></body></html>
